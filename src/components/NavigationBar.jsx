@@ -9,6 +9,7 @@ import {
 } from "react-bootstrap";
 import { loginRequest } from "../authConfig";
 import { useNavigate } from "react-router-dom";
+import { UserNav } from "./UserNav";
 
 export const NavigationBar = () => {
   const { instance } = useMsal();
@@ -17,18 +18,6 @@ export const NavigationBar = () => {
   const handleLoginRedirect = () => {
     instance
       .loginRedirect(loginRequest)
-      .catch((error) =>
-        console.log(error)
-      );
-  };
-
-  const handleLogoutRedirect = () => {
-    instance.setActiveAccount(null); // Clear the active account
-    instance
-      .logoutRedirect({
-        postLogoutRedirectUri:
-          window.location.origin,
-      })
       .catch((error) =>
         console.log(error)
       );
@@ -59,8 +48,10 @@ export const NavigationBar = () => {
         >
           Microsoft identity platform
         </a>
-        <AuthenticatedTemplate>
-          <div className="collapse navbar-collapse justify-content-end">
+        <div className="ms-auto d-flex align-items-center">
+          <AuthenticatedTemplate>
+            <UserNav />
+            {/* <div className="collapse navbar-collapse justify-content-end">
             <Button
               variant="warning"
               onClick={
@@ -69,19 +60,20 @@ export const NavigationBar = () => {
             >
               Sign out
             </Button>
-          </div>
-        </AuthenticatedTemplate>
-        <UnauthenticatedTemplate>
-          <div className="collapse navbar-collapse justify-content-end">
-            <Button
-              onClick={
-                handleLoginRedirect
-              }
-            >
-              Sign in
-            </Button>
-          </div>
-        </UnauthenticatedTemplate>
+          </div> */}
+          </AuthenticatedTemplate>
+          <UnauthenticatedTemplate>
+            <div className="collapse navbar-collapse justify-content-end">
+              <Button
+                onClick={
+                  handleLoginRedirect
+                }
+              >
+                Sign in
+              </Button>
+            </div>
+          </UnauthenticatedTemplate>
+        </div>
       </Navbar>
     </>
   );

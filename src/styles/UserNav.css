@@ -1,0 +1,22 @@
+.dropdown-item {
+    transition: all 0.3s ease;
+    border-radius: 4px;
+    margin: 2px 0;
+    padding: 8px 16px;
+    width: 100%;
+    display: block;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dropdown-item.text-dark:hover {
+    background-color: #e4e4e9;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #fff1f0;
+}

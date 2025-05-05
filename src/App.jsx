@@ -12,6 +12,10 @@ import { PageLayout } from "./components/PageLayout";
 import { IdTokenData } from "./components/DataDisplay";
 import { loginRequest } from "./authConfig";
 import { BrowserRouter as Router } from "react-router-dom";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import "./styles/App.css";
 
@@ -22,14 +26,80 @@ import "./styles/App.css";
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/getting-started.md
  */
 const MainContent = () => {
-  /**
-   * useMsal is hook that returns the PublicClientApplication instance,
-   * that tells you what msal is currently doing. For more, visit:
-   * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-react/docs/hooks.md
-   */
-  const { instance } = useMsal();
-  const activeAccount =
-    instance.getActiveAccount();
+  const {
+    instance,
+    accounts,
+    inProgress,
+  } = useMsal();
+  const [accountData, setAccountData] =
+    useState(null);
+
+  useEffect(() => {
+    const currentAccount =
+      instance.getActiveAccount() ||
+      accounts[0];
+
+    // Only update if we have an account and we're not in the middle of a redirect
+    if (
+      currentAccount &&
+      inProgress === "none"
+    ) {
+      // Acquire token silently to ensure we have fresh claims
+      instance
+        .acquireTokenSilent({
+          ...loginRequest,
+          account: currentAccount,
+        })
+        .then((response) => {
+          if (response) {
+            // Update account data with fresh token claims
+            setAccountData({
+              ...currentAccount,
+              idTokenClaims:
+                response.idTokenClaims,
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(
+            "Token acquisition failed:",
+            error
+          );
+          // Fallback to account data without fresh claims
+          setAccountData(
+            currentAccount
+          );
+        });
+    }
+
+    const accountCallback = (event) => {
+      if (
+        event.eventType ===
+          "ACCOUNT_ADDED" ||
+        event.eventType ===
+          "ACCOUNT_REMOVED" ||
+        event.eventType ===
+          "LOGIN_SUCCESS"
+      ) {
+        const currentAccount =
+          instance.getActiveAccount();
+        setAccountData(currentAccount);
+      }
+    };
+
+    const callbackId =
+      instance.addEventCallback(
+        accountCallback
+      );
+
+    return () => {
+      if (callbackId) {
+        instance.removeEventCallback(
+          callbackId
+        );
+      }
+    };
+  }, [instance, accounts, inProgress]);
 
   const handleRedirect = () => {
     instance
@@ -41,18 +111,23 @@ const MainContent = () => {
         console.log(error)
       );
   };
+
   return (
     <div className="App">
       <AuthenticatedTemplate>
-        {activeAccount ? (
+        {accountData ? (
           <Container>
             <IdTokenData
               idTokenClaims={
-                activeAccount.idTokenClaims
+                accountData.idTokenClaims
               }
             />
           </Container>
-        ) : null}
+        ) : (
+          <div>
+            Loading account data...
+          </div>
+        )}
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate>
         <Button
