@@ -25,15 +25,15 @@ export const NavigationBar = () => {
 
   const handleNavClick = (e) => {
     e.preventDefault();
-    // Use navigate instead of href to prevent full page refresh
     navigate("/");
   };
 
-  /**
-   * Most applications will need to conditionally render certain components based on whether a user is signed in or not.
-   * msal-react provides 2 easy ways to do this. AuthenticatedTemplate and UnauthenticatedTemplate components will
-   * only render their children if a user is authenticated or unauthenticated, respectively.
-   */
+  // Get active account info
+  const activeAccount =
+    instance.getActiveAccount();
+  const userEmail =
+    activeAccount?.username || "";
+
   return (
     <>
       <Navbar
@@ -50,17 +50,10 @@ export const NavigationBar = () => {
         </a>
         <div className="ms-auto d-flex align-items-center">
           <AuthenticatedTemplate>
+            <span className="text-light me-3">
+              Logged in as: {userEmail}
+            </span>
             <UserNav />
-            {/* <div className="collapse navbar-collapse justify-content-end">
-            <Button
-              variant="warning"
-              onClick={
-                handleLogoutRedirect
-              }
-            >
-              Sign out
-            </Button>
-          </div> */}
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <div className="collapse navbar-collapse justify-content-end">
