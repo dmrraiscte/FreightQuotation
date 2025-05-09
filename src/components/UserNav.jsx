@@ -5,7 +5,7 @@ import {
 } from "react-bootstrap";
 import { PersonFill } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
-import { useMsal } from "@azure/msal-react";
+import { useAuth } from "../contexts/AuthContext";
 
 import "../styles/UserNav.css";
 
@@ -13,17 +13,14 @@ export const UserNav = () => {
   const [open, setOpen] =
     useState(false);
   const navigate = useNavigate();
-  const { instance } = useMsal();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
-    instance.logoutRedirect({
-      postLogoutRedirectUri:
-        window.location.origin,
-    });
+    logout();
   };
 
-  const handleProfile = () => {
-    navigate("/profile");
+  const handleUserInfo = () => {
+    navigate("/user-info");
     setOpen(false);
   };
 
@@ -52,7 +49,7 @@ export const UserNav = () => {
             <Button
               variant="link"
               className="text-dark text-decoration-none py-2 dropdown-item"
-              onClick={handleProfile}
+              onClick={handleUserInfo}
             >
               User Info
             </Button>

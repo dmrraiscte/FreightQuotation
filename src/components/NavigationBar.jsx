@@ -46,7 +46,8 @@ export const NavigationBar = () => {
           href="/"
           onClick={handleNavClick}
         >
-          Microsoft identity platform
+          Devlop Freight Quotation
+          Platform
         </a>
         <div className="ms-auto d-flex align-items-center">
           <AuthenticatedTemplate>
