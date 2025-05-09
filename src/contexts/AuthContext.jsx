@@ -3,6 +3,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useCallback,
 } from "react";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../authConfig";
@@ -52,42 +53,43 @@ export const AuthProvider = ({
     });
   };
 
-  const fetchUserData = async (
-    token
-  ) => {
-    try {
-      const response = await fetch(
-        "https://localhost:7270/api/users/me",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type":
-              "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `HTTP error! status: ${response.status}`
+  const fetchUserData = useCallback(
+    async (token) => {
+      try {
+        const response = await fetch(
+          "https://localhost:7270/api/users/me",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type":
+                "application/json",
+            },
+          }
         );
-      }
 
-      const data =
-        await response.json();
-      setUserData(data);
-      setLastFetch(Date.now());
-      setError(null);
-    } catch (error) {
-      console.error(
-        "Error fetching user data:",
-        error
-      );
-      setError(error.message);
-      setUserData(null);
-    }
-  };
+        if (!response.ok) {
+          throw new Error(
+            `HTTP error! status: ${response.status}`
+          );
+        }
+
+        const data =
+          await response.json();
+        setUserData(data);
+        setLastFetch(Date.now());
+        setError(null);
+      } catch (error) {
+        console.error(
+          "Error fetching user data:",
+          error
+        );
+        setError(error.message);
+        setUserData(null);
+      }
+    },
+    []
+  ); // No dependencies needed since we're not using any external values
 
   // Handle token acquisition and user data fetching
   useEffect(() => {
@@ -119,11 +121,9 @@ export const AuthProvider = ({
           const shouldFetch =
             !lastFetch ||
             Date.now() - lastFetch >
-              300000;
-          if (
-            shouldFetch ||
-            !userData
-          ) {
+              300000 ||
+            !userData;
+          if (shouldFetch) {
             await fetchUserData(
               response.accessToken
             );
@@ -140,7 +140,12 @@ export const AuthProvider = ({
       };
 
     getAccessTokenAndFetchUser();
-  }, [instance]);
+  }, [
+    instance,
+    fetchUserData,
+    lastFetch,
+    userData,
+  ]);
 
   const value = {
     userData,
