@@ -17,7 +17,6 @@ import { useAuth } from "../contexts/AuthContext";
 export const MainContent = () => {
   const {
     login,
-    userData,
     loading,
     idTokenClaims,
   } = useAuth();

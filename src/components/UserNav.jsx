@@ -1,4 +1,8 @@
-import { useState } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+} from "react";
 import {
   Button,
   Collapse,
@@ -14,6 +18,38 @@ export const UserNav = () => {
     useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const dropdownRef = useRef(null);
+  const buttonRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (
+      event
+    ) => {
+      if (
+        dropdownRef.current &&
+        buttonRef.current &&
+        !dropdownRef.current.contains(
+          event.target
+        ) &&
+        !buttonRef.current.contains(
+          event.target
+        )
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+    return () => {
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -27,6 +63,7 @@ export const UserNav = () => {
   return (
     <div className="position-relative">
       <Button
+        ref={buttonRef}
         variant="primary"
         className="rounded-circle p-2"
         onClick={() => setOpen(!open)}
@@ -38,6 +75,7 @@ export const UserNav = () => {
 
       <Collapse in={open}>
         <div
+          ref={dropdownRef}
           id="user-dropdown"
           className="position-absolute end-0 mt-2 bg-white rounded shadow"
           style={{
