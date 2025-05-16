@@ -2,12 +2,17 @@ import {
   Table,
   Container,
   Alert,
+  Button,
 } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 
 export const UserInfo = () => {
-  const { userData, loading, error } =
-    useAuth();
+  const {
+    userData,
+    loading,
+    error,
+    refreshUserData,
+  } = useAuth();
 
   if (error) {
     return (
@@ -16,6 +21,12 @@ export const UserInfo = () => {
           Error loading user data:{" "}
           {error}
         </Alert>
+        <Button
+          onClick={refreshUserData}
+          disabled={loading}
+        >
+          Retry
+        </Button>
       </Container>
     );
   }

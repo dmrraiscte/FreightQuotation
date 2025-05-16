@@ -57,7 +57,7 @@ export const AuthProvider = ({
     async (token) => {
       try {
         const response = await fetch(
-          "https://localhost:7270/api/users/me",
+          "https://freightquotationapigateway.azure-api.net/api/users/me",
           {
             method: "GET",
             headers: {
