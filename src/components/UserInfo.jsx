@@ -1,9 +1,16 @@
 import {
-  Table,
-  Container,
   Alert,
   Button,
-} from "react-bootstrap";
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+  Typography,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 
 export const UserInfo = () => {
@@ -16,53 +23,78 @@ export const UserInfo = () => {
 
   if (error) {
     return (
-      <Container className="mt-3">
-        <Alert variant="danger">
+      <Box sx={{ mt: 3, mx: 2 }}>
+        <Alert
+          severity="error"
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              onClick={refreshUserData}
+              disabled={loading}
+            >
+              Retry
+            </Button>
+          }
+        >
           Error loading user data:{" "}
           {error}
         </Alert>
-        <Button
-          onClick={refreshUserData}
-          disabled={loading}
-        >
-          Retry
-        </Button>
-      </Container>
+      </Box>
     );
   }
 
   if (loading || !userData) {
     return (
-      <Container className="mt-3">
-        <div>
-          Loading user information...
-        </div>
-      </Container>
+      <Box
+        sx={{
+          mt: 3,
+          mx: 2,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <CircularProgress />
+      </Box>
     );
   }
 
   return (
-    <Container className="mt-3">
-      <h2>User Information</h2>
-      <Table
-        responsive
-        striped
-        bordered
-        hover
+    <Box sx={{ mt: 3, mx: 2 }}>
+      <Typography
+        variant="h4"
+        gutterBottom
       >
-        <tbody>
-          {Object.entries(userData).map(
-            ([key, value]) => (
-              <tr key={key}>
-                <td className="fw-bold">
+        User Information
+      </Typography>
+      <TableContainer
+        component={Paper}
+        elevation={2}
+      >
+        <Table>
+          <TableBody>
+            {Object.entries(
+              userData
+            ).map(([key, value]) => (
+              <TableRow key={key}>
+                <TableCell
+                  component="th"
+                  scope="row"
+                  sx={{
+                    fontWeight: "bold",
+                    width: "30%",
+                  }}
+                >
                   {key}
-                </td>
-                <td>{String(value)}</td>
-              </tr>
-            )
-          )}
-        </tbody>
-      </Table>
-    </Container>
+                </TableCell>
+                <TableCell>
+                  {String(value)}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   );
 };

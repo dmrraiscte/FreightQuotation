@@ -4,9 +4,12 @@ import {
   useMsal,
 } from "@azure/msal-react";
 import {
-  Navbar,
+  AppBar,
+  Toolbar,
+  Typography,
   Button,
-} from "react-bootstrap";
+  Box,
+} from "@mui/material";
 import { loginRequest } from "../authConfig";
 import { useNavigate } from "react-router-dom";
 import { UserNav } from "./UserNav";
@@ -35,40 +38,59 @@ export const NavigationBar = () => {
     activeAccount?.username || "";
 
   return (
-    <>
-      <Navbar
-        bg="primary"
-        variant="dark"
-        className="navbarStyle"
-      >
-        <a
-          className="navbar-brand"
+    <AppBar position="static">
+      <Toolbar>
+        <Typography
+          variant="h6"
+          component="a"
           href="/"
           onClick={handleNavClick}
+          sx={{
+            flexGrow: 1,
+            textDecoration: "none",
+            color: "inherit",
+            "&:hover": {
+              textDecoration: "none",
+              color: "inherit",
+            },
+          }}
         >
           Devlop Freight Quotation
           Platform
-        </a>
-        <div className="ms-auto d-flex align-items-center">
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
           <AuthenticatedTemplate>
-            <span className="text-light me-3">
+            <Typography
+              variant="body2"
+              sx={{ mr: 2 }}
+            >
               Logged in as: {userEmail}
-            </span>
+            </Typography>
             <UserNav />
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
-            <div className="collapse navbar-collapse justify-content-end">
-              <Button
-                onClick={
-                  handleLoginRedirect
-                }
-              >
-                Sign in
-              </Button>
-            </div>
+            <Button
+              color="inherit"
+              onClick={
+                handleLoginRedirect
+              }
+              sx={{
+                "&:hover": {
+                  backgroundColor:
+                    "rgba(255, 255, 255, 0.08)",
+                },
+              }}
+            >
+              Sign in
+            </Button>
           </UnauthenticatedTemplate>
-        </div>
-      </Navbar>
-    </>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 };

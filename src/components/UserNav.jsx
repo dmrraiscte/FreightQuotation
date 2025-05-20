@@ -4,10 +4,15 @@ import {
   useEffect,
 } from "react";
 import {
-  Button,
-  Collapse,
-} from "react-bootstrap";
-import { PersonFill } from "react-bootstrap-icons";
+  IconButton,
+  Popper,
+  Paper,
+  MenuList,
+  MenuItem,
+  Grow,
+  ClickAwayListener,
+} from "@mui/material";
+import { Person } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -18,41 +23,27 @@ export const UserNav = () => {
     useState(false);
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const dropdownRef = useRef(null);
-  const buttonRef = useRef(null);
+  const anchorRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (
-      event
-    ) => {
-      if (
-        dropdownRef.current &&
-        buttonRef.current &&
-        !dropdownRef.current.contains(
-          event.target
-        ) &&
-        !buttonRef.current.contains(
-          event.target
-        )
-      ) {
-        setOpen(false);
-      }
-    };
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
 
-    document.addEventListener(
-      "mousedown",
-      handleClickOutside
-    );
-    return () => {
-      document.removeEventListener(
-        "mousedown",
-        handleClickOutside
-      );
-    };
-  }, []);
+  const handleClose = (event) => {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(
+        event.target
+      )
+    ) {
+      return;
+    }
+    setOpen(false);
+  };
 
   const handleLogout = () => {
     logout();
+    setOpen(false);
   };
 
   const handleUserInfo = () => {
@@ -60,47 +51,84 @@ export const UserNav = () => {
     setOpen(false);
   };
 
-  return (
-    <div className="position-relative">
-      <Button
-        ref={buttonRef}
-        variant="primary"
-        className="rounded-circle p-2"
-        onClick={() => setOpen(!open)}
-        aria-controls="user-dropdown"
-        aria-expanded={open}
-      >
-        <PersonFill size={20} />
-      </Button>
+  // Return focus to the button when we transitioned from !open -> open
+  const prevOpen = useRef(open);
+  useEffect(() => {
+    if (
+      prevOpen.current === true &&
+      open === false
+    ) {
+      anchorRef.current.focus();
+    }
+    prevOpen.current = open;
+  }, [open]);
 
-      <Collapse in={open}>
-        <div
-          ref={dropdownRef}
-          id="user-dropdown"
-          className="position-absolute end-0 mt-2 bg-white rounded shadow"
-          style={{
-            minWidth: "160px",
-            zIndex: 1000,
-          }}
-        >
-          <div className="d-flex flex-column p-2">
-            <Button
-              variant="link"
-              className="text-dark text-decoration-none py-2 dropdown-item"
-              onClick={handleUserInfo}
-            >
-              User Info
-            </Button>
-            <Button
-              variant="link"
-              className="text-danger text-decoration-none py-2 dropdown-item"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          </div>
-        </div>
-      </Collapse>
-    </div>
+  return (
+    <>
+      <IconButton
+        ref={anchorRef}
+        aria-controls={
+          open
+            ? "menu-list-grow"
+            : undefined
+        }
+        aria-haspopup="true"
+        onClick={handleToggle}
+        sx={{
+          color: "white",
+          "&:hover": {
+            backgroundColor:
+              "rgba(255, 255, 255, 0.08)",
+          },
+        }}
+      >
+        <Person />
+      </IconButton>
+      <Popper
+        open={open}
+        anchorEl={anchorRef.current}
+        role={undefined}
+        transition
+        disablePortal
+        placement="bottom-end"
+        sx={{ zIndex: 1000 }}
+      >
+        {({ TransitionProps }) => (
+          <Grow {...TransitionProps}>
+            <Paper elevation={3}>
+              <ClickAwayListener
+                onClickAway={
+                  handleClose
+                }
+              >
+                <MenuList
+                  autoFocusItem={open}
+                  id="menu-list-grow"
+                >
+                  <MenuItem
+                    onClick={
+                      handleUserInfo
+                    }
+                  >
+                    User Info
+                  </MenuItem>
+                  <MenuItem
+                    onClick={
+                      handleLogout
+                    }
+                    sx={{
+                      color:
+                        "error.main",
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </>
   );
 };

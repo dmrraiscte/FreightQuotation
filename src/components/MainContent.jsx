@@ -3,9 +3,11 @@ import {
   Route,
 } from "react-router-dom";
 import {
-  Container,
+  Box,
   Button,
-} from "react-bootstrap";
+  Container,
+  CircularProgress,
+} from "@mui/material";
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -28,7 +30,7 @@ export const MainContent = () => {
   };
 
   return (
-    <div className="App">
+    <Box sx={{ width: "100%" }}>
       <AuthenticatedTemplate>
         <Routes>
           <Route
@@ -39,10 +41,16 @@ export const MainContent = () => {
             path="/"
             element={
               loading ? (
-                <div>
-                  Loading account
-                  data...
-                </div>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent:
+                      "center",
+                    mt: 4,
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
               ) : (
                 <Container>
                   <IdTokenData
@@ -57,14 +65,29 @@ export const MainContent = () => {
         </Routes>
       </AuthenticatedTemplate>
       <UnauthenticatedTemplate>
-        <Button
-          className="signInButton"
-          onClick={handleRedirect}
-          variant="primary"
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            mt: 4,
+          }}
         >
-          Sign up
-        </Button>
+          <Button
+            variant="contained"
+            onClick={handleRedirect}
+            sx={{
+              backgroundColor:
+                "primary.main",
+              "&:hover": {
+                backgroundColor:
+                  "primary.dark",
+              },
+            }}
+          >
+            Sign up
+          </Button>
+        </Box>
       </UnauthenticatedTemplate>
-    </div>
+    </Box>
   );
 };
