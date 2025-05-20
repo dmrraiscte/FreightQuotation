@@ -15,6 +15,7 @@ import {
 import { IdTokenData } from "./DataDisplay";
 import { UserInfo } from "./UserInfo";
 import { useAuth } from "../contexts/AuthContext";
+import { Contacts } from "./Contacts";
 
 export const MainContent = () => {
   const {
@@ -36,6 +37,10 @@ export const MainContent = () => {
           <Route
             path="/user-info"
             element={<UserInfo />}
+          />
+          <Route
+            path="/contacts"
+            element={<Contacts />}
           />
           <Route
             path="/"

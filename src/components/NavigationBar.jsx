@@ -9,14 +9,22 @@ import {
   Typography,
   Button,
   Box,
+  Stack,
 } from "@mui/material";
 import { loginRequest } from "../authConfig";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  Link,
+} from "react-router-dom";
 import { UserNav } from "./UserNav";
 
 export const NavigationBar = () => {
   const { instance } = useMsal();
   const navigate = useNavigate();
+  const activeAccount =
+    instance.getActiveAccount();
+  const userEmail =
+    activeAccount?.username || "";
 
   const handleLoginRedirect = () => {
     instance
@@ -31,47 +39,91 @@ export const NavigationBar = () => {
     navigate("/");
   };
 
-  // Get active account info
-  const activeAccount =
-    instance.getActiveAccount();
-  const userEmail =
-    activeAccount?.username || "";
-
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography
-          variant="h6"
-          component="a"
-          href="/"
-          onClick={handleNavClick}
-          sx={{
-            flexGrow: 1,
-            textDecoration: "none",
-            color: "inherit",
-            "&:hover": {
-              textDecoration: "none",
-              color: "inherit",
-            },
-          }}
-        >
-          Devlop Freight Quotation
-          Platform
-        </Typography>
+    <AppBar
+      position="static"
+      elevation={4}
+      sx={{
+        backgroundColor: "primary.main",
+        borderBottom:
+          "1px solid rgba(255, 255, 255, 0.12)",
+      }}
+    >
+      <Toolbar
+        sx={{ minHeight: "64px" }}
+      >
+        {/* Left section with logo and navigation links */}
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
+            flexGrow: 1,
           }}
         >
-          <AuthenticatedTemplate>
-            <Typography
-              variant="body2"
-              sx={{ mr: 2 }}
+          <Typography
+            variant="h6"
+            component="a"
+            href="/"
+            onClick={handleNavClick}
+            sx={{
+              textDecoration: "none",
+              color: "inherit",
+              marginRight: 4,
+              fontWeight: 600,
+              "&:hover": {
+                textDecoration: "none",
+                color: "inherit",
+              },
+            }}
+          >
+            Devlop Freight Quotation
+            Platform
+          </Typography>
+
+          {/* Navigation Links */}
+          <Stack
+            direction="row"
+            spacing={2}
+          >
+            <Button
+              color="inherit"
+              component={Link}
+              to="/contacts"
+              sx={{
+                fontWeight: 500,
+                "&:hover": {
+                  backgroundColor:
+                    "rgba(255, 255, 255, 0.08)",
+                },
+              }}
             >
-              Logged in as: {userEmail}
-            </Typography>
-            <UserNav />
+              Contacts
+            </Button>
+            {/* Add more navigation buttons here */}
+          </Stack>
+        </Box>
+
+        {/* Right section with user info */}
+        <Box>
+          <AuthenticatedTemplate>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  mr: 2,
+                  opacity: 0.9,
+                }}
+              >
+                Logged in as:{" "}
+                {userEmail}
+              </Typography>
+              <UserNav />
+            </Box>
           </AuthenticatedTemplate>
           <UnauthenticatedTemplate>
             <Button
@@ -80,6 +132,7 @@ export const NavigationBar = () => {
                 handleLoginRedirect
               }
               sx={{
+                fontWeight: 500,
                 "&:hover": {
                   backgroundColor:
                     "rgba(255, 255, 255, 0.08)",
